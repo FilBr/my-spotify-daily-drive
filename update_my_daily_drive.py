@@ -37,7 +37,7 @@ def main():
             min(len(clean_playlist), podcast_idx), 
             [
                 ep
-                for ep in sp.show_episodes(the_essential_podcast_id)["items"]
+                for ep in sp.show_episodes(podcast)["items"]
                 if datetime.strptime(ep["release_date"], "%Y-%m-%d").date() >= yesterday
             ][0]
         )

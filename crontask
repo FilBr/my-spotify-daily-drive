@@ -1,1 +1,1 @@
-* * * * *  python /app/main.py >>/tmp/out.log 2>/tmp/err.log
+* 8-23 * * * cd /home/filip/Documens/my-spotify-daily-drive/ && /home/filip/Documens/my-spotify-daily-drive/spotify/bin/python update_my_daily_drive.py >> run.log 2> err.log
