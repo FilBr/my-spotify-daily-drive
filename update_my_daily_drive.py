@@ -19,8 +19,18 @@ def main():
     # Podcasts IDs
     the_essential_podcast_id = os.environ["THE_ESSENTIAL_PODCAST_ID"]
     stories_podcast_id = os.environ["STORIES_PODCAST_ID"]
-    podcasts = [the_essential_podcast_id, stories_podcast_id]
 
+    podcasts = []
+    today = datetime.now().date()
+    yesterday = today - timedelta(days=1)
+    for podcast in [the_essential_podcast_id, stories_podcast_id]:
+        latest_episodes = [
+            ep
+            for ep in sp.show_episodes(podcast)["items"]
+            if datetime.strptime(ep["release_date"], "%Y-%m-%d").date() >= yesterday
+        ]
+        if len(latest_episodes) > 0:
+            podcasts.append(latest_episodes[0])
 
     clean_playlist = []
     # Clean playlist
@@ -28,20 +38,13 @@ def main():
         if track["track"]["uri"].startswith("spotify:track:"):
             clean_playlist.append(track["track"])
 
-    today = datetime.now().date()
-    yesterday = today - timedelta(days=1)
-
     podcast_idx = 0
-    for podcast in podcasts:
+    for idx, podcast in enumerate(podcasts):
         clean_playlist.insert(
             min(len(clean_playlist), podcast_idx), 
-            [
-                ep
-                for ep in sp.show_episodes(podcast)["items"]
-                if datetime.strptime(ep["release_date"], "%Y-%m-%d").date() >= yesterday
-            ][0]
+            podcast
         )
-        podcast_idx += 3
+        podcast_idx += (idx + 1) + 4
 
     my_daily_drive_id = os.environ["MY_DAILY_DRIVE_ID"]
     sp.playlist_replace_items(my_daily_drive_id, [track["uri"] for track in clean_playlist])
