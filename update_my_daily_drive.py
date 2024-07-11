@@ -3,13 +3,13 @@ from datetime import datetime, timedelta
 
 import spotipy
 from dotenv import load_dotenv
-from spotipy.oauth2 import SpotifyOAuth
+from spotipy.oauth2 import SpotifyOAuth, SpotifyClientCredentials
 
 load_dotenv()
 
 
 def main():
-    scope = "playlist-modify-private"
+    scope = "playlist-modify-private user-read-playback-position"
     spotify_daily_drive_id = os.environ["SPOTIFY_DAILY_DRIVE_ID"]
 
     sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
@@ -30,9 +30,9 @@ def main():
             ep
             for ep in sp.show_episodes(podcast)["items"]
             if datetime.strptime(ep["release_date"], "%Y-%m-%d").date() >= yesterday
+            and not ep["resume_point"]["fully_played"]
         ]
-        if len(latest_episodes) > 0:
-            podcasts.append(latest_episodes[0])
+        podcasts.extend(latest_episodes)
 
     clean_playlist = []
     # Clean playlist
